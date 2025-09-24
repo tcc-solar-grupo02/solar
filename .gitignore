@@ -1,1 +1,25 @@
-datasets/
+# Ignorar arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Ignorar pastas de ambiente virtual do Python
+venv/
+.venv/
+env/
+.env/
+
+# Ignorar caches e arquivos gerados pelo Python
+__pycache__/
+*.pyc
+
+# Ignorar os dados do dataset (imagens e labels)
+# O ** permite que ele encontre essas pastas em qualquer subdiretório de datasets
+datasets/**/images/
+datasets/**/labels/
+
+# Ignorar arquivos de resultado de treinamento do YOLO
+runs/
+
+# Ignorar arquivos de IDEs
+.vscode/
+.idea/
