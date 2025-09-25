@@ -41,7 +41,7 @@ results_yolo = model_yolo.train(
     epochs=2,       # Aumente para melhores resultados
     imgsz=640,       # Tamanho da imagem que o dataset foi preparado
     batch=8,
-    project='runs',  # Salva os resultados na pasta 'runs'
+    project='./api/models',  # Salva os resultados na pasta 'runs'
     name='solar_yolo'
 )
 
