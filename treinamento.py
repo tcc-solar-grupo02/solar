@@ -31,7 +31,7 @@ print("\n--- Treinando Modelo YOLOv8 ---")
 model_yolo = YOLO('yolov8n.pt')
 results_yolo = model_yolo.train(
     data='./datasets/data.yaml',
-    epochs=1,
+    epochs=50,
     imgsz=640,
     batch=8,
     project=output_dir,
