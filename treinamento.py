@@ -37,8 +37,8 @@ model_yolo = YOLO('yolov8n.pt')
 # Treina o modelo com o nosso dataset
 # O YOLO cuida do pré-processamento internamente
 results_yolo = model_yolo.train(
-    data='datasets/data.yaml',
-    epochs=50,       # Aumente para melhores resultados
+    data='./datasets/data.yaml',
+    epochs=2,       # Aumente para melhores resultados
     imgsz=640,       # Tamanho da imagem que o dataset foi preparado
     batch=8,
     project='runs',  # Salva os resultados na pasta 'runs'
@@ -47,7 +47,7 @@ results_yolo = model_yolo.train(
 
 # O melhor modelo será salvo como 'runs/solar_yolo/weights/best.pt'
 # Vamos movê-lo para nossa pasta de modelos na API
-best_yolo_path = 'runs/solar_yolo/weights/best.pt'
+best_yolo_path = './datasets/models/best_yolo.pt'
 if os.path.exists(best_yolo_path):
     os.rename(best_yolo_path, os.path.join(output_dir, "best.pt"))
     print(f"Modelo YOLOv8 treinado e salvo em {output_dir}/best.pt")
@@ -94,8 +94,8 @@ def load_data_for_svm(base_dir):
     return np.array(images), np.array(labels)
 
 # Carrega os dados de treino e teste
-X_train, y_train = load_data_for_svm("datasets/train")
-X_test, y_test = load_data_for_svm("datasets/test")
+X_train, y_train = load_data_for_svm("./datasets/train")
+X_test, y_test = load_data_for_svm("./datasets/test")
 
 print(f"Dados carregados para SVM: {len(X_train)} imagens de treino, {len(X_test)} imagens de teste.")
 
