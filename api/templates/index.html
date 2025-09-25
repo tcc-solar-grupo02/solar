@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detector de Falhas em Painéis Solares</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Detector de Falhas em Painéis Solares</h1>
+        <p>Faça o upload de uma imagem de painel solar para análise.</p>
+        
+        <div class="upload-area">
+            <input type="file" id="fileInput" accept="image/*">
+            <label for="fileInput" id="fileLabel">Clique para selecionar uma imagem</label>
+        </div>
+        
+        <img id="imagePreview" src="" alt="Pré-visualização da imagem">
+
+        <div id="results" class="hidden">
+            <h2>Resultados da Análise</h2>
+            <div class="tabs">
+                <button class="tab-button active" onclick="showTab('yolo')">YOLOv8</button>
+                <button class="tab-button" onclick="showTab('svm')">SVM</button>
+            </div>
+            
+            <div id="yolo" class="tab-content active">
+                <h3>Predição YOLOv8:</h3>
+                <p id="yoloResult">Aguardando análise...</p>
+            </div>
+            
+            <div id="svm" class="tab-content">
+                <h3>Predição SVM:</h3>
+                <p id="svmResult">Aguardando análise...</p>
+            </div>
+        </div>
+        
+        <div id="loader" class="hidden"></div>
+        <div id="error" class="hidden"></div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileLabel = document.getElementById('fileLabel');
+        const resultsDiv = document.getElementById('results');
+        const loader = document.getElementById('loader');
+        const errorDiv = document.getElementById('error');
+        
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    fileLabel.textContent = file.name;
+                    predict(file);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        async function predict(file) {
+            resultsDiv.classList.add('hidden');
+            loader.classList.remove('hidden');
+            errorDiv.classList.add('hidden');
+            
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Erro na comunicação com o servidor.');
+                }
+
+                const data = await response.json();
+                document.getElementById('yoloResult').textContent = data.yolo;
+                document.getElementById('svmResult').textContent = data.svm;
+                
+                resultsDiv.classList.remove('hidden');
+
+            } catch (err) {
+                errorDiv.textContent = `Erro: ${err.message}`;
+                errorDiv.classList.remove('hidden');
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`.tab-button[onclick="showTab('${tabName}')"]`).classList.add('active');
+        }
+    </script>
+</body>
+</html>

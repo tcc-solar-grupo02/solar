@@ -1,0 +1,7 @@
+Flask
+ultralytics
+scikit-learn
+opencv-python-headless
+numpy
+Pillow
+boto3
