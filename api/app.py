@@ -48,11 +48,12 @@ except Exception as e:
 
 # Mapeamento para tradução das classes
 CLASS_TRANSLATIONS = {
-    'BakimGereken': 'Requer Manutenção',
-    'Cracked': 'Rachado',
-    'Dirty': 'Sujo',
-    'Good': 'Bom Estado',
-    'Saglam': 'Intacto'
+    'Snow-Covered': 'Coberto de Neve',
+    'Bird-drop': 'Sujeira de Pássaro',
+    'Clean': 'Limpo',
+    'Dusty': 'empoeirado',
+    'Electrical-damage': 'Dano Elétrico',
+    'Physical-Damage': 'Dano Físico'
 }
 
 # ===================================================================
