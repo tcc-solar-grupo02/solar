@@ -98,7 +98,7 @@ def predict():
                 translated_name = CLASS_TRANSLATIONS.get(class_name, class_name)
                 yolo_result = f"{translated_name} (Confiança: {confidence:.2f})"
             else:
-                yolo_result = "Nenhum defeito detectado."
+                yolo_result = "Nenhuma placa solar detectada."
 
         # --- Predição SVM ---
         svm_result = "Modelo SVM não carregado."
