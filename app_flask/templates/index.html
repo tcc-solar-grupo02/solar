@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF--8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detector de Problemas em Painéis Solares</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Detector de Problemas em Painéis Solares</h1>
+        <p>Faça o upload de uma imagem de um painel solar para análise comparativa entre os modelos SVM e YOLOv8.</p>
+        
+        <div class="upload-section">
+            <input type="file" id="imageUpload" accept="image/*">
+            <label for="imageUpload" class="upload-button">Escolher Imagem</label>
+            <span id="fileName">Nenhum arquivo selecionado</span>
+        </div>
+        
+        <div id="imagePreview" class="image-preview"></div>
+        
+        <div id="loader" class="loader" style="display: none;"></div>
+
+        <div id="results" class="results-section" style="display: none;">
+            <div class="tabs">
+                <button class="tab-link active" onclick="openTab(event, 'svmResult')">Resultado SVM</button>
+                <button class="tab-link" onclick="openTab(event, 'yoloResult')">Resultado YOLOv8</button>
+            </div>
+
+            <div id="svmResult" class="tab-content" style="display: block;">
+                <h2>Análise SVM</h2>
+                <p><strong>Classe Detectada:</strong> <span id="svmClass"></span></p>
+                <p><strong>Confiança:</strong> <span id="svmConfidence"></span></p>
+            </div>
+
+            <div id="yoloResult" class="tab-content">
+                <h2>Análise YOLOv8</h2>
+                <p><strong>Classe Detectada:</strong> <span id="yoloClass"></span></p>
+                <p><strong>Confiança:</strong> <span id="yoloConfidence"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const fileNameSpan = document.getElementById('fileName');
+        const imagePreview = document.getElementById('imagePreview');
+        const loader = document.getElementById('loader');
+        const resultsDiv = document.getElementById('results');
+
+        imageUpload.addEventListener('change', () => {
+            const file = imageUpload.files[0];
+            if (file) {
+                fileNameSpan.textContent = file.name;
+                
+                // Exibir preview da imagem
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview da Imagem">`;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+
+                // Iniciar predição
+                predict(file);
+            }
+        });
+
+        async function predict(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            loader.style.display = 'block';
+            resultsDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro na API: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                displayResults(data);
+
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Ocorreu um erro ao processar a imagem. Verifique o console para mais detalhes.');
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        function displayResults(data) {
+            if (data.error) {
+                alert(`Erro: ${data.error}`);
+                return;
+            }
+            
+            document.getElementById('svmClass').textContent = data.svm.class;
+            document.getElementById('svmConfidence').textContent = data.svm.confidence;
+
+            document.getElementById('yoloClass').textContent = data.yolo.class;
+            document.getElementById('yoloConfidence').textContent = data.yolo.confidence;
+
+            resultsDiv.style.display = 'block';
+        }
+
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].style.display = 'none';
+            }
+
+            const tabLinks = document.getElementsByClassName('tab-link');
+            for (let i = 0; i < tabLinks.length; i++) {
+                tabLinks[i].className = tabLinks[i].className.replace(' active', '');
+            }
+
+            document.getElementById(tabName).style.display = 'block';
+            evt.currentTarget.className += ' active';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+flask
+ultralytics
+torch
+torchvision
+scikit-learn
+joblib
+numpy
+opencv-python-headless
+pillow
+boto3
